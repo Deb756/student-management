@@ -1,0 +1,67 @@
+package com.dev.student_management.controller;
+
+import com.dev.student_management.entity.StudentEntity;
+import com.dev.student_management.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/student")
+public class StudentController {
+    //    all api end points and its http status code
+    @Autowired
+    StudentService studServ;
+
+    //    save student
+    @PostMapping
+    public ResponseEntity<StudentEntity> saveStudent(@RequestBody StudentEntity newStud) {
+        try {
+            return new ResponseEntity<>(studServ.addStud(newStud), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
+    }
+
+    //    get All saved student
+    @GetMapping
+    public ResponseEntity<List<StudentEntity>> getAllStudent() {
+        List<StudentEntity> all = studServ.getAll();
+        if (all != null && !all.isEmpty())
+            return new ResponseEntity<>(all, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    //    get student by id
+    @GetMapping("/byId")
+    public ResponseEntity<StudentEntity> getStudentById(@RequestParam("id") Long id) {
+        StudentEntity stud = studServ.getById(id);
+        if (stud != null)
+            return new ResponseEntity<>(stud, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    //    update student info
+    @PutMapping("/byId")
+    public ResponseEntity<StudentEntity> updateStudentInfo(@RequestParam("id") Long id, @RequestBody StudentEntity newStud) {
+        StudentEntity stud = studServ.updateStudent(id, newStud);
+        if (stud != null)
+            return new ResponseEntity<>(stud, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    //    delete student by id
+    @DeleteMapping("/byId")
+    public ResponseEntity<?> deleteStudentById(@RequestParam("id") Long id) {
+        if (studServ.removeById(id))
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+}
