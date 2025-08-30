@@ -2,6 +2,7 @@ package com.dev.student_management.controller;
 
 import com.dev.student_management.entity.StudentEntity;
 import com.dev.student_management.service.StudentService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ public class StudentController {
 
     //    save student
     @PostMapping
-    public ResponseEntity<StudentEntity> saveStudent(@RequestBody StudentEntity newStud) {
+    public ResponseEntity<StudentEntity> saveStudent(@RequestBody StudentEntity newStud,@RequestParam("clgName") String clgName) {
         try {
-            return new ResponseEntity<>(studServ.addStud(newStud), HttpStatus.CREATED);
+            return new ResponseEntity<>(studServ.addStud(newStud,clgName), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
@@ -38,7 +39,7 @@ public class StudentController {
 
     //    get student by id
     @GetMapping("/byId")
-    public ResponseEntity<StudentEntity> getStudentById(@RequestParam("id") Long id) {
+    public ResponseEntity<StudentEntity> getStudentById(@RequestParam("id") ObjectId id) {
         StudentEntity stud = studServ.getById(id);
         if (stud != null)
             return new ResponseEntity<>(stud, HttpStatus.OK);
@@ -48,7 +49,7 @@ public class StudentController {
 
     //    update student info
     @PutMapping("/byId")
-    public ResponseEntity<StudentEntity> updateStudentInfo(@RequestParam("id") Long id, @RequestBody StudentEntity newStud) {
+    public ResponseEntity<StudentEntity> updateStudentInfo(@RequestParam("id") ObjectId id, @RequestBody StudentEntity newStud) {
         StudentEntity stud = studServ.updateStudent(id, newStud);
         if (stud != null)
             return new ResponseEntity<>(stud, HttpStatus.OK);
@@ -58,7 +59,7 @@ public class StudentController {
 
     //    delete student by id
     @DeleteMapping("/byId")
-    public ResponseEntity<?> deleteStudentById(@RequestParam("id") Long id) {
+    public ResponseEntity<?> deleteStudentById(@RequestParam("id") ObjectId id) {
         if (studServ.removeById(id))
             return new ResponseEntity<>(true, HttpStatus.OK);
         else

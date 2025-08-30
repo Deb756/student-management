@@ -1,62 +1,72 @@
 package com.dev.student_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.mongodb.lang.NonNull;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document
+@Document(collection = "student-data")
 public class StudentEntity {
 
     @Id
-    private Long regId;
+    private ObjectId regId;
+    @NonNull
     private Long rollNo;
+    @NonNull
     private String name;
+    @NonNull
+    @Indexed(unique = true)
     private String email;
     private String address;
+    @NonNull
     private String course;
+    @NonNull
     private int semester;
+    @NonNull
     private LocalDateTime date;
 
-    public LocalDateTime getDate() {
-        return date;
-    }
+    @DBRef
+    @JsonBackReference
+    private AdminEntity college;
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-
-
-    public Long getRegId() {
+    public ObjectId getRegId() {
         return regId;
     }
 
-    public void setRegId(Long regId) {
+    public void setRegId(ObjectId regId) {
         this.regId = regId;
     }
 
+    @NonNull
     public Long getRollNo() {
         return rollNo;
     }
 
-    public void setRollNo(Long rollNo) {
+    public void setRollNo(@NonNull Long rollNo) {
         this.rollNo = rollNo;
     }
 
+    @NonNull
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
     }
 
+    @NonNull
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(@NonNull String email) {
         this.email = email;
     }
 
@@ -68,11 +78,12 @@ public class StudentEntity {
         this.address = address;
     }
 
+    @NonNull
     public String getCourse() {
         return course;
     }
 
-    public void setCourse(String course) {
+    public void setCourse(@NonNull String course) {
         this.course = course;
     }
 
@@ -82,5 +93,22 @@ public class StudentEntity {
 
     public void setSemester(int semester) {
         this.semester = semester;
+    }
+
+    @NonNull
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(@NonNull LocalDateTime date) {
+        this.date = date;
+    }
+
+    public AdminEntity getCollege() {
+        return college;
+    }
+
+    public void setCollege(AdminEntity college) {
+        this.college = college;
     }
 }
