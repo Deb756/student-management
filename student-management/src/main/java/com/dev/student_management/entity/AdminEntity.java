@@ -27,6 +27,14 @@ public class AdminEntity {
     @JsonManagedReference
     List<StudentEntity> allStudent = new ArrayList<>();
 
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
     public String getCollegeName() {
         return collegeName;
     }

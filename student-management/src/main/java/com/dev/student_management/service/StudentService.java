@@ -19,6 +19,7 @@ public class StudentService {
 
     @Autowired
     AdminRepository adminRep;
+
     //    fetching all student
     public List<StudentEntity> getAll() {
         return studRep.findAll();
@@ -30,7 +31,7 @@ public class StudentService {
     }
 
     //    adding student
-    public StudentEntity addStud(StudentEntity newStud,String clgName) {
+    public StudentEntity addStud(StudentEntity newStud, String clgName) {
         AdminEntity college = adminRep.findByCollegeName(clgName);
         newStud.setCollege(college);
         newStud.setDate(LocalDateTime.now());
@@ -39,32 +40,48 @@ public class StudentService {
         adminRep.save(college);
         return newStud;
     }
-//    deleting student
-    public boolean removeById(ObjectId id)
-    {
-        if(getById(id) != null)
-        {
+
+    //    deleting student
+    public boolean removeById(ObjectId id, String collegeName) {
+        AdminEntity clg = adminRep.findByCollegeName(collegeName);
+        boolean b = clg.getAllStudent().removeIf(e -> e.getRegId().equals(id));
+        if (b) {
             studRep.deleteById(id);
+            adminRep.save(clg);
             return true;
         }
         return false;
     }
 
     //    update student
-    public StudentEntity updateStudent(ObjectId id, StudentEntity newStud) {
-        return studRep.findById(id).map(existing -> {
+    public StudentEntity updateStudent(ObjectId id, StudentEntity newStud, String clgName) {
+        AdminEntity college = adminRep.findByCollegeName(clgName);
+        if (college == null) {
+            throw new RuntimeException("College not found with name: " + clgName);
+        }
 
-            if (newStud.getRegId() != null) existing.setRegId(newStud.getRegId());
-            if (newStud.getRollNo() != null) existing.setRollNo(newStud.getRollNo());
-            if (newStud.getName() != null) existing.setName(newStud.getName());
-            if (newStud.getEmail() != null) existing.setEmail(newStud.getEmail());
-            if (newStud.getAddress() != null) existing.setAddress(newStud.getAddress());
-            if (newStud.getCourse() != null) existing.setCourse(newStud.getCourse());
-            if (newStud.getSemester() != 0) existing.setSemester(newStud.getSemester());
-            if (newStud.getDate() != null) existing.setDate(newStud.getDate());
+        StudentEntity student = studRep.findById(id).orElse(null);
+        if (student == null) {
+            throw new RuntimeException("Student not found with id: " + id);
+        }
 
-            return studRep.save(existing);
+        // Verify college ownership using DBRef only
+        if (!student.getCollege().getId().equals(college.getId())) {
+            throw new RuntimeException("Student does not belong to this college");
+        }
 
-        }).orElse(null);
+        // Update only non-null fields
+        if (newStud.getRegId() != null) student.setRegId(newStud.getRegId());
+        if (newStud.getRollNo() != null) student.setRollNo(newStud.getRollNo());
+        if (newStud.getName() != null) student.setName(newStud.getName());
+        if (newStud.getEmail() != null) student.setEmail(newStud.getEmail());
+        if (newStud.getAddress() != null) student.setAddress(newStud.getAddress());
+        if (newStud.getCourse() != null) student.setCourse(newStud.getCourse());
+        if (newStud.getSemester() != 0) student.setSemester(newStud.getSemester());
+        if (newStud.getDate() != null) student.setDate(newStud.getDate());
+
+        return studRep.save(student);
     }
+
+
 }

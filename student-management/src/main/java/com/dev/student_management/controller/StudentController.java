@@ -19,9 +19,9 @@ public class StudentController {
 
     //    save student
     @PostMapping
-    public ResponseEntity<StudentEntity> saveStudent(@RequestBody StudentEntity newStud,@RequestParam("clgName") String clgName) {
+    public ResponseEntity<StudentEntity> saveStudent(@RequestBody StudentEntity newStud, @RequestParam("clgName") String clgName) {
         try {
-            return new ResponseEntity<>(studServ.addStud(newStud,clgName), HttpStatus.CREATED);
+            return new ResponseEntity<>(studServ.addStud(newStud, clgName), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
@@ -49,8 +49,8 @@ public class StudentController {
 
     //    update student info
     @PutMapping("/byId")
-    public ResponseEntity<StudentEntity> updateStudentInfo(@RequestParam("id") ObjectId id, @RequestBody StudentEntity newStud) {
-        StudentEntity stud = studServ.updateStudent(id, newStud);
+    public ResponseEntity<StudentEntity> updateStudentInfo(@RequestParam("id") ObjectId id, @RequestBody StudentEntity newStud, @RequestParam("clgName") String clgName) {
+        StudentEntity stud = studServ.updateStudent(id, newStud, clgName);
         if (stud != null)
             return new ResponseEntity<>(stud, HttpStatus.OK);
         else
@@ -59,8 +59,8 @@ public class StudentController {
 
     //    delete student by id
     @DeleteMapping("/byId")
-    public ResponseEntity<?> deleteStudentById(@RequestParam("id") ObjectId id) {
-        if (studServ.removeById(id))
+    public ResponseEntity<?> deleteStudentById(@RequestParam("id") ObjectId id, @RequestParam("clgName") String clgName) {
+        if (studServ.removeById(id, clgName))
             return new ResponseEntity<>(true, HttpStatus.OK);
         else
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -24,4 +24,6 @@ public class AdminService {
     public AdminEntity saveAdmin(AdminEntity newAdmin) {
         return adminRepo.save(newAdmin);
     }
+
+
 }
